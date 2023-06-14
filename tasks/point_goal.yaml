@@ -1,0 +1,6 @@
+name: Safexp-PointGoal3-v0
+max_episode_len: 1000
+n_envs: 5
+backup_files: [
+    'tasks/point_goal.yaml', 
+    'tasks/safety_gym.py']

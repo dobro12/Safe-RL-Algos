@@ -1,0 +1,60 @@
+# base
+name: offtrc
+
+# for RL
+discount_factor: 0.99
+len_replay_buffer: 100000
+n_update_steps: 10000
+n_steps: 1000
+gae_coeff: 0.97
+critic_lr: 3e-4
+n_critic_iters: 40
+max_grad_norm: 1.0
+
+# for trust region
+damping_coeff: 0.01
+num_conjugate: 10
+line_decay: 0.8
+max_kl: 0.001
+
+# for constraint
+con_threshold: 0.025
+con_alpha: 1.0
+
+# for backup
+backup_files: [
+    algos/offtrc/agent.py,
+    algos/offtrc/optimizer.py,
+    algos/offtrc/storage.py,
+    algos/offtrc/safetygym.yaml,
+]
+
+# for logging
+logging:
+    metric: [fps, kl, beta, entropy, optim_case, objective, constraint]
+    rollout: [reward_sum, cost_sum, eplen]
+    train: [cost_critic_loss, cost_std_critic_loss, reward_critic_loss]
+
+# for model
+model:
+    actor:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        log_std_init: 0.0
+    reward_critic:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        clip_range: [-np.inf, np.inf]
+    cost_critic:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        clip_range: [-np.inf, np.inf]
+    cost_std_critic:
+        mlp:
+            shape: [512, 512]
+            activation: ReLU
+        out_activation: softplus
+        clip_range: [0.0, np.inf]
