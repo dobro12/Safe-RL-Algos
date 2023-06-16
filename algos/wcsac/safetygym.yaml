@@ -1,39 +1,39 @@
 # base
-name: offtrc
+name: wcsac
 
 # for RL
 discount_factor: 0.99
-len_replay_buffer: 100000
-n_update_steps: 10000
-n_steps: 1000
-gae_coeff: 0.97
-critic_lr: 3e-4
-n_critic_iters: 40
+n_steps: 10
+n_update_iters: 10
+batch_size: 256
+len_replay_buffer: 1000000
 max_grad_norm: 1.0
+soft_update_ratio: 0.995
+actor_lr: 1e-3
+critic_lr: 1e-3
 
-# for trust region
-damping_coeff: 0.01
-num_conjugate: 10
-line_decay: 0.8
-max_kl: 0.001
+# for entropy
+entropy_threshold: -1.0
+ent_alpha_lr: 1e-3
 
 # for constraint
 con_threshold: 0.025
 con_alpha: 0.25
+con_damp: 10.0
+con_beta_lr: 5e-2
 
 # for backup
 backup_files: [
-    algos/offtrc/agent.py,
-    algos/offtrc/optimizer.py,
-    algos/offtrc/storage.py,
-    algos/offtrc/safetygym.yaml,
+    algos/wcsac/agent.py,
+    algos/wcsac/storage.py,
+    algos/wcsac/safetygym.yaml,
 ]
 
 # for logging
 logging:
-    metric: [fps, kl, beta, entropy, optim_case, objective, constraint]
+    metric: [fps, entropy, constraint, ent_alpha, con_beta]
     rollout: [reward_sum, cost_sum, eplen]
-    train: [cost_critic_loss, cost_std_critic_loss, reward_critic_loss]
+    train: [cost_critic_loss, cost_std_critic_loss, reward_critic_loss, policy_loss]
 
 # for model
 model:

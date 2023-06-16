@@ -5,9 +5,9 @@ import tasks.register
 
 # algorithm
 from algos.offtrc import Agent as OffTRC
-# from algos.wcsac import Agent as WCSAC
+from algos.wcsac import Agent as WCSAC
 algo_dict = {'offtrc': OffTRC}
-# algo_dict = {'offtrc': OffTRC, 'wcsac': WCSAC}
+algo_dict = {'offtrc': OffTRC, 'wcsac': WCSAC}
 
 # utils
 from utils import backupFiles, setSeed, cprint
