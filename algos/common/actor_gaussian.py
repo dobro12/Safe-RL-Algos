@@ -42,13 +42,17 @@ class ActorGaussian(ActorBase):
             self.activation(),
             torch.nn.Linear(actor_cfg['mlp']['shape'][-1], self.action_dim),
         ))
+        if 'out_activation' in actor_cfg.keys():
+            self.out_activation = eval(f'torch.nn.functional.{actor_cfg["out_activation"]}')
+        else:
+            self.out_activation = lambda x: x
         
     def forward(self, state:torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         '''
         output: (mean, log_std, std)
         '''
         x = self.model(state)
-        mean = self.mean_decoder(x)
+        mean = self.out_activation(self.mean_decoder(x))
         log_std = self.std_decoder(x)
         log_std = torch.clamp(log_std, self.log_std_min, self.log_std_max)
         std = torch.exp(log_std)
