@@ -1,0 +1,4 @@
+name: Portfolio-v0
+backup_files: [
+    'tasks/portfolio/env.py', 
+    'tasks/portfolio/portfolio.yaml']

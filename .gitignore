@@ -6,7 +6,6 @@
 args.txt
 
 __pycache__
-portfolio
 wandb
 results
 .vscode
