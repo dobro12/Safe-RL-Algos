@@ -1,0 +1,8 @@
+name: HalfCheetah-v4
+make_args: null
+max_episode_len: 1000
+n_envs: 5
+n_total_steps: 1000000
+backup_files: [
+    'tasks/halfcheetah.yaml',
+]

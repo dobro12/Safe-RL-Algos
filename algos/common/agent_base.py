@@ -1,13 +1,31 @@
+from utils.vectorize import RunningMeanStd
+
 from abc import ABC, abstractmethod
+import numpy as np
 import torch
 
 class AgentBase(ABC):
-    def __init__(self, name:str, device:torch.device) -> None:
+    def __init__(
+            self, name:str, 
+            device:torch.device,
+            obs_dim:int,
+            action_dim:int,
+            norm_obs:bool=False, 
+            norm_reward:bool=False) -> None:
+        # set attributes
         self.name = name
         self.device = device
+        self.obs_dim = obs_dim
+        self.action_dim = action_dim
+
+        # for normalization
+        self.norm_obs = norm_obs
+        self.norm_reward = norm_reward
+        self.obs_rms = RunningMeanStd('obs', self.obs_dim)
+        self.reward_rms = RunningMeanStd('reward', 1)
 
     @abstractmethod
-    def getAction(self, state:torch.Tensor, deterministic:bool=False) -> torch.Tensor:
+    def getAction(self, state:np.ndarray, deterministic:bool=False) -> np.ndarray:
         """
         Return action given state.
         if state's dimension is (batch_size, state_dim), then action's dimension is (batch_size, action_dim).

@@ -1,5 +1,13 @@
-from stable_baselines3.common.vec_env.subproc_vec_env import SubprocVecEnv
+# from stable_baselines3.common.vec_env.subproc_vec_env import SubprocVecEnv
+# from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
+
+from gymnasium.vector.utils.spaces import batch_space
+from gymnasium.vector import AsyncVectorEnv
+from gymnasium.utils import EzPickle
+from gymnasium.spaces import Box
+
 from collections import deque
+from typing import Iterator
 import numpy as np
 import pickle
 import wandb
@@ -7,47 +15,42 @@ import sys
 import os
 
 
-class CustomSubprocVecEnv(SubprocVecEnv):
-    def __init__(self, env_fns, start_method=None):
-        super().__init__(env_fns, start_method)
-        self.obs_rms = RunningMeanStd(self.observation_space.shape[0])
+class ConAsyncVectorEnv(AsyncVectorEnv, EzPickle):
+    """Vectorized environment that simultaneously runs multiple environments."""
 
-    def reset(self):
-        observations = super().reset()
-        self.obs_rms.update(observations)
-        norm_observations = self.obs_rms.normalize(observations)
-        return norm_observations
+    def __init__(
+        self,
+        env_fns: Iterator[callable],
+        copy: bool = True,
+    ):
+        """Vectorized environment that serially runs multiple environments.
 
-    def step(self, actions):
-        observations, rewards, dones, infos = super().step(actions)
-        self.obs_rms.update(observations)
-        norm_observations = self.obs_rms.normalize(observations)
-        for info in infos:
-            if 'terminal_observation' in info.keys():
-                info['terminal_observation'] = self.obs_rms.normalize(info['terminal_observation'])
-        return norm_observations, rewards, dones, infos
-    
-    def loadScaling(self, save_dir, model_num):
-        self.obs_rms.load(save_dir, model_num)
-    
-    def saveScaling(self, save_dir, model_num):
-        self.obs_rms.save(save_dir, model_num)
+        Args:
+            env_fns: env constructors
+            copy: If ``True``, then the :meth:`reset` and :meth:`step` methods return a copy of the observations.
+        """
+        super().__init__(env_fns, copy=copy)
+        EzPickle.__init__(self, env_fns, copy=copy)
+
+        # Get the reward space
+        dummy_env = env_fns[0]()
+        cost_space = dummy_env.unwrapped.cost_space
+        self.cost_space = batch_space(cost_space, n=self.num_envs)
+        self.single_cost_space = cost_space
+        dummy_env.close()
+        del dummy_env
 
 
 class RunningMeanStd(object):
-    def __init__(self, state_dim, limit_cnt=np.inf):
-        """
-        calulates the running mean and std of a data stream
-        https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm
-        :param epsilon: (float) helps with arithmetic issues
-        :param state_dim: (int) the state_dim of the data stream's output
-        """
+    def __init__(self, name:str, state_dim:int, limit_cnt:float=np.inf):
+        self.name = name
         self.limit_cnt = limit_cnt
         self.mean = np.zeros(state_dim, np.float32)
         self.var = np.ones(state_dim, np.float32)
         self.count = 0.0
 
-    def update(self, arr):
+    def update(self, raw_data):
+        arr = raw_data.reshape(-1, self.mean.shape[0])
         batch_mean = np.mean(arr, axis=0)
         batch_var = np.var(arr, axis=0)
         batch_count = arr.shape[0]
@@ -58,29 +61,30 @@ class RunningMeanStd(object):
         if self.count >= self.limit_cnt: return
         delta = batch_mean - self.mean
         tot_count = self.count + batch_count
-
         new_mean = self.mean + delta * batch_count / tot_count
         m_a = self.var * self.count
         m_b = batch_var * batch_count
         m_2 = m_a + m_b + np.square(delta) * (self.count * batch_count / (self.count + batch_count))
         new_var = m_2 / (self.count + batch_count)
-
         new_count = batch_count + self.count
         self.mean = new_mean
         self.var = new_var
         self.count = new_count
         return
 
-    def normalize(self, observations):
-        return (observations - self.mean)/np.sqrt(self.var + 1e-8)
+    def normalize(self, observations, mean=0.0, std=1.0):
+        norm_obs = (observations - self.mean)/np.sqrt(self.var + 1e-8)
+        return norm_obs * std + mean
     
     def load(self, save_dir, model_num):
-        file_name = f"{save_dir}/checkpoint/scale_{model_num}.pkl"
-        with open(file_name, 'rb') as f:
-            self.mean, self.var, self.count = pickle.load(f)
+        file_name = f"{save_dir}/{self.name}_scale/{model_num}.pkl"
+        if os.path.exists(file_name):
+            with open(file_name, 'rb') as f:
+                self.mean, self.var, self.count = pickle.load(f)
 
     def save(self, save_dir, model_num):
-        file_name = f"{save_dir}/checkpoint/scale_{model_num}.pkl"
+        file_name = f"{save_dir}/{self.name}_scale/{model_num}.pkl"
+        if not os.path.exists(os.path.dirname(file_name)):
+            os.makedirs(os.path.dirname(file_name))
         with open(file_name, 'wb') as f:
             pickle.dump([self.mean, self.var, self.count], f)
-

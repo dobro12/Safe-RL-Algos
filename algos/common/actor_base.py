@@ -41,6 +41,12 @@ class ActorBase(ABC, torch.nn.Module):
         self.device = device
 
     @abstractmethod
+    def build(self) -> None:
+        """
+        Build actor network.
+        """
+
+    @abstractmethod
     def updateActionDist(self, state:torch.Tensor, epsilon:torch.Tensor) -> None:
         """
         Return unnormalized action and normalized action.
