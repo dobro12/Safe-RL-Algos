@@ -25,10 +25,10 @@ con_taus: [100.0]
 
 # for backup
 backup_files: [
-    algos/safe_rl/ipo/agent.py,
-    algos/safe_rl/ipo/storage.py,
-    algos/safe_rl/ipo/optimizer.py,
-    algos/safe_rl/ipo/safetygym.yaml,
+    safe_rl_algos/algos/safe_rl/ipo/agent.py,
+    safe_rl_algos/algos/safe_rl/ipo/storage.py,
+    safe_rl_algos/algos/safe_rl/ipo/optimizer.py,
+    safe_rl_algos/algos/safe_rl/ipo/safetygym.yaml,
 ]
 
 # for logging

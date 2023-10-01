@@ -1,8 +1,8 @@
-from algos.common.critic_multihead import CriticSMultiHead as CostCritic
-from algos.common.actor_gaussian import ActorGaussian as Actor
-from algos.common.critic_base import CriticS as RewardCritic
-from algos.common.agent_base import AgentBase
-from utils import cprint
+from safe_rl_algos.algos.common.critic_multihead import CriticSMultiHead as CostCritic
+from safe_rl_algos.algos.common.actor_gaussian import ActorGaussian as Actor
+from safe_rl_algos.algos.common.critic_base import CriticS as RewardCritic
+from safe_rl_algos.algos.common.agent_base import AgentBase
+from safe_rl_algos.utils import cprint
 
 from .storage import RolloutBuffer
 

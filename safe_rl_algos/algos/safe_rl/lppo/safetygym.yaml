@@ -25,9 +25,9 @@ con_lam_lr: 0.01
 
 # for backup
 backup_files: [
-    algos/lppo/agent.py,
-    algos/lppo/storage.py,
-    algos/lppo/safetygym.yaml,
+    safe_rl_algos/algos/lppo/agent.py,
+    safe_rl_algos/algos/lppo/storage.py,
+    safe_rl_algos/algos/lppo/safetygym.yaml,
 ]
 
 # for logging

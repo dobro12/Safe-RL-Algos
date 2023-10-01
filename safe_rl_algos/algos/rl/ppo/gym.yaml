@@ -21,9 +21,9 @@ clip_ratio: 0.2
 
 # for backup
 backup_files: [
-    algos/rl/ppo/agent.py,
-    algos/rl/ppo/storage.py,
-    algos/rl/ppo/gym.yaml,
+    safe_rl_algos/algos/rl/ppo/agent.py,
+    safe_rl_algos/algos/rl/ppo/storage.py,
+    safe_rl_algos/algos/rl/ppo/gym.yaml,
 ]
 
 # for logging

@@ -1,4 +1,4 @@
-from utils.vectorize import RunningMeanStd
+from safe_rl_algos.utils.vectorize import RunningMeanStd
 
 from abc import ABC, abstractmethod
 import numpy as np

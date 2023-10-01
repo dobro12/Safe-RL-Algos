@@ -3,12 +3,12 @@ from gymnasium.vector import AsyncVectorEnv
 import gymnasium as gym
 
 # algorithm
-from algos import algo_dict
+from safe_rl_algos.algos import algo_dict
 
 # utils
-from utils import backupFiles, setSeed, cprint
-from utils.slackbot import Slackbot
-from utils.logger import Logger
+from safe_rl_algos.utils import backupFiles, setSeed, cprint
+from safe_rl_algos.utils.slackbot import Slackbot
+from safe_rl_algos.utils.logger import Logger
 
 # base
 from ruamel.yaml import YAML

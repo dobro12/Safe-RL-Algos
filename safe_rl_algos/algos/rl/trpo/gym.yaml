@@ -20,9 +20,9 @@ kl_tolerance: 2.0
 
 # for backup
 backup_files: [
-    algos/rl/trpo/agent.py,
-    algos/rl/trpo/storage.py,
-    algos/rl/trpo/gym.yaml,
+    safe_rl_algos/algos/rl/trpo/agent.py,
+    safe_rl_algos/algos/rl/trpo/storage.py,
+    safe_rl_algos/algos/rl/trpo/gym.yaml,
 ]
 
 # for logging

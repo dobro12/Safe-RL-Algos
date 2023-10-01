@@ -1,4 +1,4 @@
-from algos.common.network_base import MLP, initWeights
+from safe_rl_algos.algos.common.network_base import MLP, initWeights
 
 from abc import ABC, abstractmethod
 from typing import Tuple

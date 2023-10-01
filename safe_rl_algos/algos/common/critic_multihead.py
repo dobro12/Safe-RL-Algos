@@ -1,7 +1,7 @@
-from algos.common.critic_base import (
+from safe_rl_algos.algos.common.critic_base import (
     CriticS, CriticSA
 )
-from algos.common.network_base import MLP
+from safe_rl_algos.algos.common.network_base import MLP
 
 import numpy as np
 import torch

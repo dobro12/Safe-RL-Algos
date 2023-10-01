@@ -1,5 +1,5 @@
-from algos.common.network_base import MLP, initWeights
-from algos.common.actor_base import (
+from safe_rl_algos.algos.common.network_base import MLP, initWeights
+from safe_rl_algos.algos.common.actor_base import (
     ActorBase, normalize, unnormalize, clip
 )
 

@@ -1,14 +1,14 @@
 # env
-from utils.vectorize import ConAsyncVectorEnv
-from tasks.safety_gym import SafetyGymEnv
+from safe_rl_algos.utils.vectorize import ConAsyncVectorEnv
+from safe_rl_algos.tasks.safety_gym import SafetyGymEnv
 
 # algorithm
-from algos import algo_dict
+from safe_rl_algos.algos import algo_dict
 
 # utils
-from utils import backupFiles, setSeed, cprint
-from utils.slackbot import Slackbot
-from utils.logger import Logger
+from safe_rl_algos.utils import backupFiles, setSeed, cprint
+from safe_rl_algos.utils.slackbot import Slackbot
+from safe_rl_algos.utils.logger import Logger
 
 # base
 from ruamel.yaml import YAML

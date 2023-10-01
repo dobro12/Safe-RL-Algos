@@ -1,4 +1,4 @@
-from algos.common.optimizer_base import (
+from safe_rl_algos.algos.common.optimizer_base import (
     TROptimizer, flatGrad, EPS
 )
 
