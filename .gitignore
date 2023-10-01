@@ -10,3 +10,4 @@ wandb
 results
 .vscode
 .ipynb_checkpoints
+safe_rl_algos.egg-info
