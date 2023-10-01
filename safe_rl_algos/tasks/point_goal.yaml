@@ -5,6 +5,6 @@ n_envs: 5
 n_total_steps: 5000000
 costs: ['collision']
 backup_files: [
-    'tasks/point_goal.yaml', 
-    'tasks/safety_gym.py'
+    'safe_rl_algos/tasks/point_goal.yaml', 
+    'safe_rl_algos/tasks/safety_gym.py'
 ]
