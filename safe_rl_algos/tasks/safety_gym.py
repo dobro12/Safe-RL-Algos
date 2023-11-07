@@ -42,22 +42,23 @@ class SafetyGymEnv(gym.Env):
     # private methods
     #################
 
-    def _cost(self, original_cost, h_coeff=10.0):
-        if not "goal" in self.name.lower():
+    def _cost(self, original_cost, h_coeff=20.0):
+        if not "goal" in self.env_name.lower():
             return original_cost
-
-        hazard_pos_list = None
-        hazard_size = None
-        hazard_dist = np.inf
-        for obs in self._env.task._obstacles:
-            if obs.name == "hazards":
-                hazard_pos_list = obs.pos
-                hazard_size = obs.size
-                break
-        assert hazard_pos_list is not None
-        for hazard_pos in hazard_pos_list:
-            dist = self._env.task.agent.dist_xy(hazard_pos)
-            if dist < hazard_dist:
-                hazard_dist = dist
-        cost = 1.0/(1.0 + np.exp((hazard_dist - hazard_size)*h_coeff))
-        return cost
+        else:
+            return original_cost
+        # hazard_pos_list = None
+        # hazard_size = None
+        # hazard_dist = np.inf
+        # for obs in self._env.task._obstacles:
+        #     if obs.name == "hazards":
+        #         hazard_pos_list = obs.pos
+        #         hazard_size = obs.size
+        #         break
+        # assert hazard_pos_list is not None
+        # for hazard_pos in hazard_pos_list:
+        #     dist = self._env.task.agent.dist_xy(hazard_pos)
+        #     if dist < hazard_dist:
+        #         hazard_dist = dist
+        # cost = 1.0/(1.0 + np.exp((hazard_dist - hazard_size)*h_coeff))
+        # return cost

@@ -106,18 +106,24 @@ class TROptimizer:
         H_x = flatGrad(kl_x, self.actor.parameters(), retain_graph=True)
         return H_x + x*self.damping_coeff
 
-    def _conjugateGradient(self, g:torch.Tensor) -> torch.Tensor:
-        x = torch.zeros_like(g, device=self.device)
+    def _conjugateGradient(self, g):
+        x = torch.zeros_like(g)
         r = g.clone()
+        rs_old = torch.dot(r, r)
+        if rs_old < EPS:
+            return x
         p = g.clone()
-        rs_old = torch.sum(r*r)
         for i in range(self.num_conjugate):
             Ap = self._Hx(p)
-            pAp = torch.sum(p*Ap)
-            alpha = rs_old/(pAp + EPS)
+            pAp = torch.dot(p, Ap)
+            alpha = rs_old/pAp
             x += alpha*p
+            if i == self.num_conjugate - 1:
+                break
             r -= alpha*Ap
-            rs_new = torch.sum(r*r)
-            p = r + (rs_new/(rs_old + EPS))*p
+            rs_new = torch.dot(r, r)
+            if rs_new < EPS:
+                break
+            p = r + (rs_new/rs_old)*p
             rs_old = rs_new
         return x

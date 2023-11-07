@@ -1,8 +1,13 @@
 from gymnasium.vector.utils.spaces import batch_space
+from gymnasium.vector.utils import concatenate
 from gymnasium.vector import AsyncVectorEnv
 from gymnasium.utils import EzPickle
+import gymnasium
 
-from typing import Iterator
+from typing import (
+    Iterator, Any, List, Optional, Tuple, Union
+)
+from copy import deepcopy
 import numpy as np
 import pickle
 import os
@@ -32,6 +37,82 @@ class ConAsyncVectorEnv(AsyncVectorEnv, EzPickle):
         self.single_cost_space = cost_space
         dummy_env.close()
         del dummy_env
+
+    def reset(
+        self,
+        n_actions_per_env: Optional[List[int]] = None,
+        seed: Optional[Union[int, List[int]]] = None,
+        options: Optional[dict] = None,
+    ):
+        observations = super().reset(seed=seed, options=options)[0]
+
+        if n_actions_per_env is not None:
+            observation_list = []
+
+            for env_idx, pipe in enumerate(self.parent_pipes):
+                n_actions = n_actions_per_env[env_idx]
+                pipe = self.parent_pipes[env_idx]
+
+                for _ in range(n_actions):
+                    action = self.single_action_space.sample()
+                    pipe.send(("step", action))
+                    result, success = pipe.recv()
+                    assert success
+                    observation = result[0]
+
+                observation_list.append(observation)
+
+            if not self.shared_memory:
+                self.observations = concatenate(
+                    self.single_observation_space,
+                    observation_list,
+                    self.observations,
+                )
+
+            return deepcopy(self.observations) if self.copy else self.observations, {}
+        else:
+            return observations, {}
+
+
+class NormObsWrapper(gymnasium.Wrapper):
+    def __init__(self, env:gymnasium.Env):
+        super().__init__(env)
+        self.num_envs = getattr(env, "num_envs", 1)
+        self.is_vector_env = getattr(env, "is_vector_env", False)
+        if self.is_vector_env:
+            obs_dim = env.single_observation_space.shape[0]
+        else:
+            obs_dim = env.observation_space.shape[0]
+        self.obs_rms = RunningMeanStd("env_obs", obs_dim)
+
+    def step(self, action, update_statistics:bool=True):
+        """Steps through the environment and normalizes the observation."""
+        obs, rews, terminateds, truncateds, infos = self.env.step(action)
+        obs = self.normalize(obs, update_statistics)
+        return obs, rews, terminateds, truncateds, infos
+
+    def reset(self, **kwargs):
+        if 'update_statistics' in kwargs.keys():
+            update_statistics = kwargs['update_statistics']
+            del kwargs['update_statistics']
+        else:
+            update_statistics = True
+
+        """Resets the environment and normalizes the observation."""
+        obs, info = self.env.reset(**kwargs)
+        return self.normalize(obs, update_statistics), info
+
+    def normalize(self, obs, update_statistics:bool=True):
+        """Normalises the observation using the running mean and variance of the observations."""
+        if update_statistics:
+            self.obs_rms.update(obs)
+        return self.obs_rms.normalize(obs)
+    
+    def loadScaling(self, save_dir, model_num):
+        self.obs_rms.load(save_dir, model_num)
+    
+    def saveScaling(self, save_dir, model_num):
+        self.obs_rms.save(save_dir, model_num)
 
 
 class RunningMeanStd(object):

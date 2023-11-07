@@ -21,8 +21,8 @@ class AgentBase(ABC):
         # for normalization
         self.norm_obs = norm_obs
         self.norm_reward = norm_reward
-        self.obs_rms = RunningMeanStd('obs', self.obs_dim)
-        self.reward_rms = RunningMeanStd('reward', 1)
+        self.obs_rms = RunningMeanStd('agent_obs', self.obs_dim)
+        self.reward_rms = RunningMeanStd('agent_reward', 1)
 
     @abstractmethod
     def getAction(self, state:np.ndarray, deterministic:bool=False) -> np.ndarray:
