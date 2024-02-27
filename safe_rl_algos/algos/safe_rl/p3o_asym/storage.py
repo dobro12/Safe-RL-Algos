@@ -122,8 +122,7 @@ class RolloutBuffer:
         cost_targets_tensor = torch.tensor(np.concatenate(cost_targets_list, axis=0), device=self.device, dtype=torch.float32)
         reward_gaes_tensor = torch.tensor(np.concatenate(reward_gaes_list, axis=0), device=self.device, dtype=torch.float32)
         cost_gaes_tensor = torch.tensor(np.concatenate(cost_gaes_list, axis=0), device=self.device, dtype=torch.float32)
-        # const_vals = np.mean(np.concatenate(costs_list, axis=0), axis=0)/(1.0 - self.discount_factor)
-        const_vals = cost_targets_tensor.mean(dim=0).detach().cpu().numpy()
+        const_vals = np.mean(np.concatenate(costs_list, axis=0), axis=0)/(1.0 - self.discount_factor)
 
         return obs_tensor, states_tensor, actions_tensor, reward_targets_tensor, cost_targets_tensor, \
             reward_gaes_tensor, cost_gaes_tensor, const_vals

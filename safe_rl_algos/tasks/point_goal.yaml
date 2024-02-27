@@ -2,7 +2,7 @@ name: SafetyPointGoal1-v0
 make_args: null
 max_episode_len: 1000
 n_envs: 5
-n_total_steps: 5000000
+n_total_steps: 10000000
 costs: ['collision']
 backup_files: [
     'safe_rl_algos/tasks/point_goal.yaml', 
