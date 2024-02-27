@@ -1,5 +1,5 @@
 # base
-name: lppo
+name: p3o
 
 # for RL
 norm_obs: true
@@ -12,6 +12,7 @@ n_actor_iters: 20
 n_critic_iters: 20
 max_grad_norm: 1.0
 gae_coeff: 0.97
+ent_coeff: 0.001
 
 # for trust region
 max_kl: 0.01
@@ -21,19 +22,19 @@ clip_ratio: 0.2
 
 # for constraints
 con_thresholds: [0.025]
-con_lam_lr: 0.01
+con_coeff: 1000.0
 
 # for backup
 backup_files: [
-    safe_rl_algos/algos/safe_rl/lppo/agent.py,
-    safe_rl_algos/algos/safe_rl/lppo/storage.py,
-    safe_rl_algos/algos/safe_rl/lppo/safetygym.yaml,
+    safe_rl_algos/algos/safe_rl/p3o/agent.py,
+    safe_rl_algos/algos/safe_rl/p3o/storage.py,
+    safe_rl_algos/algos/safe_rl/p3o/safetygym.yaml,
 ]
 
 # for logging
 logging: 
     cost_indep: [fps, reward_sum, eplen, kl, entropy, actor_loss, reward_critic_loss, cost_critic_loss]
-    cost_dep: [cost_sum, con_lambdas]
+    cost_dep: [cost_sum]
 
 # for model
 model:
